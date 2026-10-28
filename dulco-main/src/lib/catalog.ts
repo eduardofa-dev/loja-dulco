@@ -3,6 +3,8 @@ export type CatalogProduct = {
   name: string;
   description: string;
   price: number;
+  promotional_price?: number | null;
+  promotion_enabled?: boolean;
   image_url: string;
   category: string;
   is_available: boolean;
@@ -12,6 +14,17 @@ export type CatalogProduct = {
 };
 
 export type ProductFormValues = Omit<CatalogProduct, "id">;
+
+export type CatalogCategory = { name: string; sort_order: number; is_active: boolean };
+
+export function isOnSale(p: Pick<CatalogProduct, "price" | "promotional_price" | "promotion_enabled">): boolean {
+  return Boolean(p.promotion_enabled && p.promotional_price != null && Number(p.promotional_price) > 0 && Number(p.promotional_price) < Number(p.price));
+}
+
+export function effectivePrice(p: Pick<CatalogProduct, "price" | "promotional_price" | "promotion_enabled">): number {
+  return isOnSale(p) ? Number(p.promotional_price) : Number(p.price);
+}
+
 
 export const initialProducts: CatalogProduct[] = [
   { id: 1, name: "Brownie", description: "Um clássico para adoçar qualquer pausa.", price: 15, image_url: "/imagens/brownie.png", category: "Brownies", is_available: true, is_visible: true, is_featured: true, sort_order: 1 },
@@ -28,6 +41,7 @@ export const initialProducts: CatalogProduct[] = [
 export const blankProduct: ProductFormValues = {
   name: "", description: "", price: 0, image_url: "", category: "Doces especiais",
   is_available: true, is_visible: true, is_featured: false, sort_order: 0,
+  promotional_price: null, promotion_enabled: false,
 };
 
 export function publicProducts(products: CatalogProduct[]) {
