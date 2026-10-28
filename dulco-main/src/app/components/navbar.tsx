@@ -1,163 +1,112 @@
 "use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Menu, Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import { useCarrinho } from "./carrinhocontext";
 import { whatsappMessageMaker } from "@/utils/wpp-message-maker";
-import { Plus, Minus, Trash2, Menu, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+
+const links = [
+  { href: "#inicio", label: "Início" },
+  { href: "#cardapio", label: "Cardápio" },
+  { href: "#sobre", label: "Sobre nós" },
+  { href: "#como-pedir", label: "Como pedir" },
+];
 
 export default function Navbar({ contactNumber }: { contactNumber: string }) {
   const { itens, removerItem, removerUmaUnidade, adicionarItem } = useCarrinho();
-  const [hoverSacola, setHoverSacola] = useState(false);
-  const [menuAberto, setMenuAberto] = useState(false);
-  const [menuMobile, setMenuMobile] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  const total = itens.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
-  const quantidadeTotal = itens.reduce((acc, item) => acc + item.quantidade, 0);
+  const total = itens.reduce((sum, item) => sum + item.preco * item.quantidade, 0);
+  const quantity = itens.reduce((sum, item) => sum + item.quantidade, 0);
+  const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
   return (
-    <nav className="bg-[#F0D4F3] w-full px-6 py-3 flex items-center justify-between relative">
-      {/* Logo */}
-      <Link href="/">
-        <Image src="/imagens/logo.png" alt="Logo" width={90} height={90} />
-      </Link>
-
-      {/* Menu Desktop */}
-      <ul className="hidden md:flex gap-6 font-semibold rounded-full text-[#633F6E]">
-        {["Início", "Produtos"].map((texto, index) => (
-          <li key={index}>
-            <a
-              href={["/", "#produtos"][index]}
-              className="flex items-center justify-center w-28 h-10 rounded-lg hover:text-[#F0D4F3] hover:bg-[#633F6E] transition-colors duration-300"
-            >
-              {texto}
-            </a>
-          </li>
-        ))}
-      </ul>
-
-      {/* Menu Mobile */}
-      <div className="md:hidden flex items-center gap-2">
-        <button onClick={() => setMenuMobile(!menuMobile)}>
-          {menuMobile ? <X size={28} /> : <Menu size={28} />}
-        </button>
+    <header className="relative z-50 border-b border-white/[0.06] bg-[#0b0b0b]">
+      <div className="mx-auto flex h-[90px] max-w-[1320px] items-center justify-between gap-4 px-5 sm:px-8 lg:px-12">
+        <Link href="#inicio" aria-label="Dulço — início" className="flex items-center gap-3">
+          <Image src="/imagens/logo.png" alt="Logo Dulço" width={63} height={63} className="h-[63px] w-[63px] object-contain" priority />
+          <span className="hidden font-serif text-2xl italic tracking-tight text-[#f4e4d5] sm:inline">Dulço</span>
+        </Link>
+        <nav className="hidden items-center gap-7 lg:flex" aria-label="Menu principal">
+          {links.map((link) => (
+            <Link key={link.href} href={link.href} className="border-b border-transparent py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#e5ded7] transition hover:border-[#d9904e] hover:text-[#d9904e]">
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+        <div className="flex items-center gap-2 sm:gap-4">
+          <a href="#cardapio" className="hidden rounded-full p-2 text-[#f1e5d9] transition hover:text-[#d9904e] sm:inline-flex" aria-label="Explorar o cardápio">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.11em]">Peça agora</span>
+          </a>
+          <button type="button" onClick={() => setCartOpen((v) => !v)} aria-label={cartOpen ? "Fechar sacola" : "Abrir sacola"} aria-expanded={cartOpen} className="relative rounded-full p-2 text-[#f1e5d9] transition hover:bg-[#30231b] hover:text-[#d9904e] focus-visible:outline-2 focus-visible:outline-[#d9904e]">
+            <ShoppingBag size={22} strokeWidth={1.7} />
+            {quantity > 0 && <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#d9904e] px-1 text-[10px] font-bold text-black">{quantity}</span>}
+          </button>
+          <button type="button" onClick={() => setMobileOpen((v) => !v)} aria-label={mobileOpen ? "Fechar menu" : "Abrir menu"} aria-expanded={mobileOpen} className="rounded-full p-2 text-[#f1e5d9] lg:hidden">
+            {mobileOpen ? <X size={25} /> : <Menu size={25} />}
+          </button>
+        </div>
       </div>
 
-      {/* Sacola com contador */}
-      <div className="relative ml-4">
-        <button
-          onClick={() => setMenuAberto(!menuAberto)}
-          onMouseEnter={() => setHoverSacola(true)}
-          onMouseLeave={() => setHoverSacola(false)}
-          className="p-2 rounded-full transition-colors duration-300 hover:bg-[#633F6E] flex items-center justify-center"
-        >
-          <Image
-            src={hoverSacola ? "/icons/bag-icon rosa.svg" : "/icons/bag-icon copiar.svg"}
-            alt="Sacola"
-            width={26}
-            height={26}
-          />
-          {quantidadeTotal > 0 && (
-            <span className="absolute -top-1 -right-1 bg-[#FF4B91] text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
-              {quantidadeTotal}
-            </span>
-          )}
-        </button>
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.nav initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="absolute left-0 right-0 top-full overflow-hidden border-b border-[#785338]/50 bg-[#161310] shadow-2xl lg:hidden" aria-label="Menu mobile">
+            <div className="flex flex-col px-6 py-4">
+              {links.map((link) => <Link href={link.href} key={link.href} onClick={() => setMobileOpen(false)} className="border-b border-white/10 py-4 text-sm font-semibold uppercase tracking-widest text-[#ebd8c8]">{link.label}</Link>)}
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
 
-        {/* Dropdown animado do carrinho */}
-        <AnimatePresence>
-          {menuAberto && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="absolute top-12 right-0 w-80 bg-white shadow-lg rounded-lg p-4 z-50"
-            >
-              <h3 className="font-semibold text-lg mb-2 text-[#633F6E]">Seu Carrinho</h3>
-              {itens.length === 0 ? (
-                <p className="text-gray-500">Carrinho vazio</p>
-              ) : (
-                <ul className="space-y-4 max-h-60 overflow-y-auto">
+      <AnimatePresence>
+        {cartOpen && (
+          <>
+            <button type="button" aria-label="Fechar sacola" className="fixed inset-0 z-40 cursor-default bg-black/60" onClick={() => setCartOpen(false)} />
+            <motion.aside initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }} className="absolute right-3 top-[80px] z-50 w-[calc(100vw-24px)] max-w-[385px] rounded-2xl border border-[#7a5033] bg-[#202020] p-5 text-[#f6efe8] shadow-2xl sm:right-8" aria-label="Sua sacola">
+              <div className="mb-5 flex items-center justify-between">
+                <h2 className="text-xl font-semibold">Sua sacola <span className="text-[#d9904e]">({quantity})</span></h2>
+                <button type="button" onClick={() => setCartOpen(false)} aria-label="Fechar carrinho" className="rounded-full p-1 hover:bg-white/10"><X size={20}/></button>
+              </div>
+              {itens.length === 0 ? <p className="py-8 text-center text-sm text-[#b4a79c]">Sua sacola está vazia. Escolha seus doces favoritos!</p> : (
+                <ul className="max-h-72 space-y-4 overflow-y-auto pr-1">
                   {itens.map((item) => (
-                    <li key={item.id} className="flex justify-between items-center">
-                      <div>
-                        <p className="font-medium text-[#633F6E]">{item.nome}</p>
-                        <p className="text-sm text-gray-600">
-                          {item.quantidade} x R$ {item.preco.toFixed(2).replace(".", ",")}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <button
-                            onClick={() => removerUmaUnidade(item.id)}
-                            className="p-1 bg-[#633F6E] text-white rounded hover:bg-gray-300"
-                          >
-                            <Minus size={14} />
-                          </button>
-                          <span className="text-sm">{item.quantidade}</span>
-                          <button
-                            onClick={() => adicionarItem({ ...item, quantidade: 1 })}
-                            className="p-1 bg-[#633F6E] text-white rounded hover:bg-gray-300"
-                          >
-                            <Plus size={14} />
-                          </button>
-                          <button
-                            onClick={() => removerItem(item.id)}
-                            className="ml-2 text-red-500 hover:text-red-700"
-                            title="Remover todos"
-                          >
-                            <Trash2 size={16} />
-                          </button>
+                    <li key={item.id} className="border-b border-white/10 pb-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold text-[#f4e0cf]">{item.nome}</p>
+                          <p className="mt-1 text-xs text-[#d7a77b]">{brl.format(item.preco)} / unidade</p>
                         </div>
+                        <button type="button" aria-label={"Remover " + item.nome} onClick={() => removerItem(item.id)} className="rounded-full p-1 text-[#ce9472] hover:bg-white/10"><Trash2 size={17}/></button>
+                      </div>
+                      <div className="mt-3 flex items-center gap-3">
+                        <button type="button" aria-label={"Diminuir " + item.nome} className="rounded-full border border-white/20 p-1 hover:bg-white/10" onClick={() => removerUmaUnidade(item.id)}><Minus size={14}/></button>
+                        <span className="min-w-5 text-center text-sm tabular-nums">{item.quantidade}</span>
+                        <button type="button" aria-label={"Aumentar " + item.nome} className="rounded-full border border-white/20 p-1 hover:bg-white/10" onClick={() => adicionarItem({ ...item, quantidade: 1 })}><Plus size={14}/></button>
+                        <span className="ml-auto text-sm font-semibold">{brl.format(item.preco * item.quantidade)}</span>
                       </div>
                     </li>
                   ))}
                 </ul>
               )}
               {itens.length > 0 && (
-                <div className="mt-4 border-t pt-3">
-                  <p className="font-semibold text-[#633F6E]">
-                    Total: R$ {total.toFixed(2).replace(".", ",")}
-                  </p>
-                  <Link
-                    href={`https://wa.me/${contactNumber}?text=${whatsappMessageMaker(itens)}`}
-                    target="_blank"
-                    onClick={() => itens.forEach((item) => removerItem(item.id))}
-                    className="block mt-2 bg-[#633F6E] text-white text-center py-2 rounded hover:bg-[#82528c] transition-colors"
-                  >
-                    Finalizar Compra no WhatsApp
-                  </Link>
+                <div className="mt-5">
+                  <div className="flex items-center justify-between border-t border-white/10 py-4 text-lg font-semibold">
+                    <span>Total</span><span className="text-[#e8aa73]">{brl.format(total)}</span>
+                  </div>
+                  <a href={"https://wa.me/" + contactNumber + "?text=" + whatsappMessageMaker(itens)} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 rounded-lg bg-[#bd753e] px-4 py-4 text-sm font-bold text-white transition hover:bg-[#d9904e]">
+                    <ShoppingBag size={18} /> Enviar pedido pelo WhatsApp
+                  </a>
+                  <p className="mt-3 text-center text-[11px] leading-5 text-[#a79a8d]">O pedido será enviado para confirmação pelo WhatsApp.</p>
                 </div>
               )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Menu Mobile Dropdown */}
-      <AnimatePresence>
-        {menuMobile && (
-          <motion.ul
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="absolute top-20 left-0 w-full bg-[#F0D4F3] flex flex-col items-center gap-4 py-4 md:hidden z-40 shadow"
-          >
-            {["Início", "Produtos"].map((texto, index) => (
-              <li key={index}>
-                <Link
-                  href={["/", "#produtos"][index]}
-                  onClick={() => setMenuMobile(false)}
-                  className="text-[#633F6E] font-semibold text-lg"
-                >
-                  {texto}
-                </Link>
-              </li>
-            ))}
-          </motion.ul>
+            </motion.aside>
+          </>
         )}
       </AnimatePresence>
-    </nav>
+    </header>
   );
 }
