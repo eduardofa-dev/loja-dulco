@@ -14,7 +14,8 @@
     "next": "15.5.28",
     "react": "19.1.10",
     "react-dom": "19.1.10",
-    "swiper": "^11.2.10"
+    "swiper": "^11.2.10",
+    "@supabase/supabase-js": "^2.57.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -11,6 +11,7 @@ export type ProductCardProps = {
   price: number;
   imageUrl: string;
   description?: string;
+  available?: boolean;
 };
 
 const priceFormatter = new Intl.NumberFormat("pt-BR", {
@@ -18,12 +19,13 @@ const priceFormatter = new Intl.NumberFormat("pt-BR", {
   currency: "BRL",
 });
 
-export default function ProductCard({ id, productName, price, imageUrl, description }: ProductCardProps) {
+export default function ProductCard({ id, productName, price, imageUrl, description, available = true }: ProductCardProps) {
   const { adicionarItem } = useCarrinho();
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
 
   const addToCart = () => {
+    if (!available) return;
     adicionarItem({ id, nome: productName, preco: price, quantidade: quantity });
     setQuantity(1);
     setAdded(true);
@@ -72,6 +74,7 @@ export default function ProductCard({ id, productName, price, imageUrl, descript
             <button
               type="button"
               onClick={addToCart}
+              disabled={!available}
               title={`Adicionar ${productName} ao carrinho`}
               aria-label={`Adicionar ${quantity} unidade(s) de ${productName} ao carrinho`}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-[#df9c60] bg-[#be753e] text-white transition hover:bg-[#d99250] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d9904e]"
@@ -81,7 +84,7 @@ export default function ProductCard({ id, productName, price, imageUrl, descript
           </div>
         </div>
         <div className="mt-2 min-h-4 text-right text-[11px] text-[#e6b085]" aria-live="polite">
-          {added ? "Adicionado à sacola!" : ""}
+          {!available ? "Esgotado" : added ? "Adicionado à sacola!" : ""}
         </div>
       </div>
     </article>
