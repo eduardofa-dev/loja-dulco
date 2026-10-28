@@ -38,6 +38,7 @@ export default function ProductCard({ id, productName, price, imageUrl, descript
           src={imageUrl}
           alt={productName}
           fill
+          unoptimized={imageUrl.startsWith("https://")}
           sizes="(max-width: 640px) 95vw, (max-width: 1024px) 48vw, (max-width: 1280px) 31vw, 290px"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
