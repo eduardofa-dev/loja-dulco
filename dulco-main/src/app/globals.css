@@ -1,13 +1,67 @@
 @import "tailwindcss";
-@import "swiper/css";
+
+:root {
+  color-scheme: dark;
+}
+
 html {
   scroll-behavior: smooth;
 }
-.no-spinner::-webkit-inner-spin-button,
-.no-spinner::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+
+body {
+  background: #0b0b0b;
+  color: #f8f5f1;
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
-.no-spinner {
-  -moz-appearance: textfield; 
+
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+::selection {
+  background: #c78143;
+  color: #111;
+}
+
+.section-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: #d9904e;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+  line-height: 1.6;
+}
+
+.section-kicker::before,
+.section-kicker::after {
+  content: "";
+  display: block;
+  width: 1.45rem;
+  height: 1px;
+  background: #8d603d;
+}
+
+.hero-glow {
+  background: radial-gradient(circle, rgba(200, 116, 49, 0.22) 0%, rgba(161, 88, 35, 0.11) 43%, transparent 68%);
+  filter: blur(18px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
