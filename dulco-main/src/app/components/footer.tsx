@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Instagram, MapPin, MessageCircle } from "lucide-react";
 
@@ -7,9 +6,8 @@ export default function Footer({ contactNumber }: { contactNumber: string }) {
     <footer id="contato" className="border-t border-[#815638]/50 bg-[#0b0b0b] px-5 pt-20 sm:px-8 lg:px-12">
       <div className="mx-auto grid max-w-[1320px] gap-12 pb-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_0.8fr_1fr] lg:gap-20">
         <div>
-          <Link href="#inicio" className="inline-flex items-center gap-3">
-            <Image src="/imagens/logo.png" alt="Logo Dulço" width={66} height={66} className="h-[66px] w-[66px] object-contain" />
-            <span className="font-serif text-3xl italic text-[#f1dfce]">Dulço</span>
+          <Link href="#inicio" aria-label="Dulço — início" className="inline-flex items-center">
+            <span className="font-serif text-[34px] font-semibold italic tracking-tight text-[#f1dfce]">Dulço<span className="text-[#d9904e]">.</span></span>
           </Link>
           <p className="mt-5 max-w-[290px] text-sm leading-7 text-[#a69d95]">Transformando ingredientes em momentos de felicidade. Um doce de cada vez.</p>
           <div className="mt-6 flex gap-3">

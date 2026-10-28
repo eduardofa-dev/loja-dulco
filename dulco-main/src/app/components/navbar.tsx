@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -27,9 +26,8 @@ export default function Navbar({ contactNumber }: { contactNumber: string }) {
   return (
     <header className="relative z-50 border-b border-white/[0.06] bg-[#0b0b0b]">
       <div className="mx-auto flex h-[90px] max-w-[1320px] items-center justify-between gap-4 px-5 sm:px-8 lg:px-12">
-        <Link href="#inicio" aria-label="Dulço — início" className="flex items-center gap-3">
-          <Image src="/imagens/logo.png" alt="Logo Dulço" width={63} height={63} className="h-[63px] w-[63px] object-contain" priority />
-          <span className="hidden font-serif text-2xl italic tracking-tight text-[#f4e4d5] sm:inline">Dulço</span>
+        <Link href="#inicio" aria-label="Dulço — início" className="inline-flex shrink-0 items-center">
+          <span className="font-serif text-[27px] font-semibold italic tracking-tight text-[#f4e4d5] sm:text-[32px]">Dulço<span className="text-[#d9904e]">.</span></span>
         </Link>
         <nav className="hidden items-center gap-7 lg:flex" aria-label="Menu principal">
           {links.map((link) => (
